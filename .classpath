@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/example/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="JYTHON_HOME/jython.jar" sourcepath="/JYTHON_HOME/Doc/javadoc"/>
+	<classpathentry kind="var" path="JYTHON_HOME/jython.jar" sourcepath="/JYTHON_HOME/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -6,6 +6,7 @@ import static net.abhinavsarkar.jywrapper.Messages._;
 import net.abhinavsarkar.jywrapper.annotation.Wraps;
 import net.abhinavsarkar.jywrapper.exception.PythonImportNotFoundException;
 
+import org.python.core.PyClass;
 import org.python.core.PyFunction;
 import org.python.core.PyModule;
 import org.python.core.PyObject;
@@ -50,7 +51,9 @@ public final class JyWrapper {
 		}
 		
 		final PyObject pyImport = PyImportLoader.loadPyImport(pyImportName);
-		if (!(pyImport instanceof PyType || pyImport instanceof PyModule)) {
+		if (!(pyImport instanceof PyType 
+				|| pyImport instanceof PyModule 
+				|| pyImport instanceof PyClass)) {
 			throw new IllegalArgumentException(_("JyWrapper.5", pyImportName));  //$NON-NLS-1$
 		}
 		return Util.py2Java(pyImport, javaClass);
