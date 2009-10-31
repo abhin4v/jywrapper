@@ -8,6 +8,18 @@ import org.junit.Test;
 
 public class DependentTest {
 
+	private static final String PYLIB_DIR_NAME = "Lib";
+
+	static {
+		try {
+			JyWrapper.addToPythonPath(
+					DependentTest.class.getClassLoader()
+						.getResource(PYLIB_DIR_NAME).toURI());
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private final Employee Employee_ = JyWrapper.wrap(Employee.class, "person.Employee");
 
 	private final Dependent Dependent_ = JyWrapper.wrap(Dependent.class, "person.Dependent");

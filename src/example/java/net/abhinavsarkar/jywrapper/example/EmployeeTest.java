@@ -3,11 +3,24 @@ package net.abhinavsarkar.jywrapper.example;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import net.abhinavsarkar.jywrapper.JyWrapper;
 
 import org.junit.Test;
 
 public class EmployeeTest {
+
+	private static final String PYLIB_DIR_NAME = "Lib";
+
+	static {
+		try {
+			JyWrapper.addToPythonPath(
+					DependentTest.class.getClassLoader()
+						.getResource(PYLIB_DIR_NAME).toURI());
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	private final Employee Employee_ = JyWrapper.wrap(Employee.class, "person.Employee");
 

@@ -2,6 +2,10 @@ package net.abhinavsarkar.jywrapper;
 
 import static net.abhinavsarkar.jywrapper.Messages._;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+
 import org.python.core.Py;
 import org.python.core.PyClass;
 import org.python.core.PyFunction;
@@ -81,6 +85,34 @@ final class Util {
 
 	static String camelCase2UnderScore(final String word) {
 		return word.replaceAll("([A-Z])", "_$1").toLowerCase();   //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	static PyString resolvePath(final URI pythonPath) {
+		PyString resolvedPath = null;
+		if (pythonPath.getScheme().equals("jar")) {
+			final String schemeSpecificPart = pythonPath.getSchemeSpecificPart();
+			final int lastIndexOf = schemeSpecificPart.lastIndexOf("!");
+			final String jarPath = schemeSpecificPart.substring(5, lastIndexOf);
+			final File file = new File(jarPath);
+			if (file.exists()) {
+				try {
+					resolvedPath = Py.newString(file.getCanonicalPath()
+						+ schemeSpecificPart.substring(lastIndexOf + 1));
+				} catch (final IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		} else if (pythonPath.getScheme().equals("file")) {
+			final File file = new File(pythonPath);
+			if (file.exists()) {
+				try {
+					resolvedPath = Py.newString(file.getCanonicalPath());
+				} catch (final IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		return resolvedPath;
 	}
 
 }
