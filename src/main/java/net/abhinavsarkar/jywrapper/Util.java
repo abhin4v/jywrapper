@@ -5,14 +5,22 @@ import static net.abhinavsarkar.jywrapper.Messages._;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.python.core.Py;
 import org.python.core.PyClass;
+import org.python.core.PyDictionary;
 import org.python.core.PyFunction;
+import org.python.core.PyList;
 import org.python.core.PyModule;
 import org.python.core.PyObject;
+import org.python.core.PySet;
 import org.python.core.PyString;
 import org.python.core.PyType;
+import org.python.core.adapter.PyObjectAdapter;
 
 final class Util {
 
@@ -40,14 +48,82 @@ final class Util {
 			return new PyObject[0];
 		}
 		if (args.length == 1) {
-			return new PyObject[] { Py.java2py(args[0]) };
+			return new PyObject[] { java2py(args[0]) };
 		}
 
 		final PyObject[] pyArgs = new PyObject[args.length];
 		for (int i = args.length; --i >= 0;) {
-			pyArgs[i] = Py.java2py(args[i]);
+			pyArgs[i] = java2py(args[i]);
 		}
 		return pyArgs;
+	}
+
+	private static abstract class InterfaceAdapter implements PyObjectAdapter {
+
+		private final Class<?> adaptedInterface;
+
+		public InterfaceAdapter(final Class<?> adaptedInterface) {
+			if (!adaptedInterface.isInterface()) {
+				throw new IllegalArgumentException(
+						_("JyWrapper.8", adaptedInterface.getName()));
+			}
+			this.adaptedInterface = adaptedInterface;
+		}
+
+		public boolean canAdapt(final Object object) {
+			return adaptedInterface.isAssignableFrom(object.getClass());
+		}
+
+	}
+
+	private static List<InterfaceAdapter> interfaceAdapters = new ArrayList<InterfaceAdapter>();
+
+	static {
+		interfaceAdapters.add(
+				new InterfaceAdapter(Set.class) {
+					public PyObject adapt(final Object object) {
+						final Set<?> set = (Set<?>) object;
+						final PySet pySet = new PySet();
+						for (final Object o : set) {
+							pySet.add(java2py(o));
+						}
+						return pySet;
+					}
+				});
+		interfaceAdapters.add(
+				new InterfaceAdapter(List.class) {
+					public PyObject adapt(final Object object) {
+						final List<?> list = (List<?>) object;
+						final PyList pyList = new PyList();
+						for (final Object o : list) {
+							pyList.add(java2py(o));
+						}
+						return pyList;
+					}
+				});
+		interfaceAdapters.add(
+				new InterfaceAdapter(Map.class) {
+					public PyObject adapt(final Object object) {
+						final Map<?, ?> map = (Map<?, ?>) object;
+						final PyDictionary pyDictionary = new PyDictionary();
+						for (final Map.Entry<?, ?> entry : map.entrySet()) {
+							pyDictionary.put(
+									java2py(entry.getKey()),
+									java2py(entry.getValue()));
+						}
+						return pyDictionary;
+					}
+				});
+	}
+
+	public static PyObject java2py(final Object object) {
+		for (final InterfaceAdapter interfaceAdapter : interfaceAdapters) {
+			if (interfaceAdapter.canAdapt(object)) {
+				return interfaceAdapter.adapt(object);
+			}
+		}
+
+		return Py.java2py(object);
 	}
 
 	static String getPyImportName(final PyObject pyObject) {

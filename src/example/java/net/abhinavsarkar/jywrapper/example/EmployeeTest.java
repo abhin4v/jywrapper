@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.abhinavsarkar.jywrapper.JyWrapper;
 
 import org.junit.Test;
@@ -47,6 +50,20 @@ public class EmployeeTest {
 		employee.addDependent(dependent);
 
 		assertTrue(employee.getDependents().contains(dependent));
+	}
+
+	@Test
+	public void testSetDependent() {
+		final Dependent dependent = Dependent_.initialize();
+		dependent.setFirstName("hawk");
+		dependent.setLastName("hawkster");
+		final Employee employee = Employee_.initialize("abhinav", "sarkar");
+		final Set<Dependent> dependents = new HashSet<Dependent>();
+		dependents.add(dependent);
+		employee.setDependents(dependents);
+		employee.removeDependent(dependent);
+
+		assertFalse(employee.getDependents().contains(dependent));
 	}
 
 	@Test

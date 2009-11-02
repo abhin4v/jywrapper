@@ -100,7 +100,6 @@ public final class JyWrapper {
 		}
 	}
 
-
 	public static void removeFromPythonPath(final URI path) {
 		final PySystemState pySystemState = Py.getSystemState();
 		final PyString resolvedPath = Util.resolvePath(path);

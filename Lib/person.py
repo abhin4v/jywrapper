@@ -24,6 +24,9 @@ class Employee():
         if dependent in self._dependents:
             self._dependents.remove(dependent)
             dependent.set_employee(None)
+        
+    def set_dependents(self, dependents):
+        self._dependents = dependents
             
     def __eq__(self, other):
         if self == other:
@@ -34,7 +37,7 @@ class Employee():
         return False
             
     def __str__(self):
-        return "<Employee: %s %s>" % (self._first_name, self._last_name)
+        return "<Employee: %s %s (%s)>" % (self._first_name, self._last_name, self.__hash__())
     
     def __hash__(self):
         return 31 + hash(self.__class__) + hash(self._first_name) + hash(self._last_name)
@@ -60,7 +63,7 @@ class Dependent(object):
         return False
         
     def __str__(self):
-        return "<Dependent: %s %s>" % (self.first_name, self.last_name)
+        return "<Dependent: %s %s (%s)>" % (self.first_name, self.last_name, self.__hash__())
     
     def __hash__(self):
         return 31 + hash(self.__class__) + hash(self.first_name) + hash(self.last_name)
